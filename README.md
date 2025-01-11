@@ -135,18 +135,17 @@ module "dbms_postgres_platform" {
 
 ### users
 
-This output, an array, provides the users details for users defined input.
+This output, a map, provides the users details for users defined input.
 
 | Key       | Type   | Description                                                                       | Sensitive |
 |-----------|--------|-----------------------------------------------------------------------------------|-----------|
-| id        | String | A unique identifier for the user in the format "databaseName_userName".           | No        |
 | database  | String | The name of the database, extracted from the portion before the first underscore. | No        |
 | refers_to | String | The user’s actual name, extracted from the portion after the first underscore.    | No        |
 | username  | String | The full key, used as the username in the database (same as "id").                | No        |
 
 ### password
 
-This output, map of passwords whose keys is users.id, the passwords for the users generated.
+This output, map of passwords whose keys is the users map key, the passwords for the users generated.
 
 ## Requirements
 
