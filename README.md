@@ -47,11 +47,35 @@ the user has access to.
 | `Database`      | List (Optional) | Permissions on databases.  | `[]`        |
 | `Schema`        | List (Optional) | Permissions on schemas.    | `[]`        |
 
-### Default Value
+### `settings`
 
-```hcl
-databases = {}
-```
+A global configuration object allowing you to customize various settings for the module, including an optional password
+policy.
+
+#### Settings Configuration
+
+| **Field**         | **Type**          | **Description**                                                                                                                                                                                 | **Default** |
+|-------------------|-------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|-------------|
+| `password_policy` | Object (Optional) | An object that configures the random password generation policy. See [Password Policy Configuration](#password-policy-configuration) for details. If omitted, default policy settings are used. | *See below* |
+
+#### Password Policy Configuration
+
+Each field below controls a specific aspect of the randomly generated password:
+
+| **Field**                                  | **Type** | **Description**                                                                                  | **Default**        |
+|--------------------------------------------|----------|--------------------------------------------------------------------------------------------------|--------------------|
+| `length`                                   | Number   | The total length of the generated password.                                                      | `16`               |
+| `has_special_characters`                   | Boolean  | Whether to include special characters in the password.                                           | `true`             |
+| `has_uppercase_characters`                 | Boolean  | Whether to include uppercase letters (`A-Z`) in the password.                                    | `true`             |
+| `has_lowercase_characters`                 | Boolean  | Whether to include lowercase letters (`a-z`) in the password.                                    | `true`             |
+| `has_numeric_characters`                   | Boolean  | Whether to include numeric characters (`0-9`) in the password.                                   | `true`             |
+| `override_special_characters`              | String   | A custom set of special characters to use, instead of the default characters (`!@#$%^&*()-_=+`). | `"!@#$%^&*()-_=+"` |
+| `minimum_uppercase_characters_occurrences` | Number   | Minimum required occurrences of uppercase letters. `null` means no specific requirement.         | `null`             |
+| `minimum_lowercase_characters_occurrences` | Number   | Minimum required occurrences of lowercase letters. `null` means no specific requirement.         | `null`             |
+| `minimum_numeric_characters_occurrences`   | Number   | Minimum required occurrences of numeric characters. `null` means no specific requirement.        | `null`             |
+| `minimum_special_characters_occurrences`   | Number   | Minimum required occurrences of special characters. `null` means no specific requirement.        | `null`             |
+
+If you omit the `password_policy` object entirely, the module uses the defaults shown above.
 
 ## Module Usage
 
@@ -111,12 +135,18 @@ module "dbms_postgres_platform" {
 
 ### users
 
-This output provides the usernames and passwords of the users created for the databases.
+This output, an array, provides the users details for users defined input.
 
-| Key	      | Type	   | Description                                    | 	Sensitive |
-|-----------|---------|------------------------------------------------|------------|
-| username	 | String	 | The username of the database user. (Generated) | 	No        |
-| password	 | String	 | The password of the database user. (Generated) | 	Yes       |
+| Key       | Type   | Description                                                                       | Sensitive |
+|-----------|--------|-----------------------------------------------------------------------------------|-----------|
+| id        | String | A unique identifier for the user in the format "databaseName_userName".           | No        |
+| database  | String | The name of the database, extracted from the portion before the first underscore. | No        |
+| refers_to | String | The user’s actual name, extracted from the portion after the first underscore.    | No        |
+| username  | String | The full key, used as the username in the database (same as "id").                | No        |
+
+### password
+
+This output, map of passwords whose keys is users.id, the passwords for the users generated.
 
 ## Requirements
 
