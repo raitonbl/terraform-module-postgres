@@ -72,4 +72,5 @@ variable "settings" {
       override_special_characters = "!@#$%^&*()-_=+"
     })
   })
+  default = {}
 }
